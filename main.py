@@ -31,9 +31,19 @@ for url in newrls:
     req = requests.get(url, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
-        name = soup.find('h2', class_=re.compile('orgName')).text.strip()
+        name = str(soup.find('h2', class_=re.compile(
+            'orgName')).text.strip()).lower()
         email = soup.find('a', class_=re.compile('msl_email'))['href'][7:]
+
+        name = name.replace("society", "")
+        name = name.replace("warwick", "")
+        name = name + " society exec"
+        name = name.replace("  ", " ")
+        name = name.strip()
+        name = name.title()
+
         print(name + ", " + email)
+
     except:
         pass
     time.sleep(0.5)
