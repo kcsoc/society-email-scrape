@@ -1,6 +1,6 @@
 # warwicksu-societies-email-grabber
  
-```sh
+```bash
 git clone
 pip3 install -r requirements.txt
 python3 main.py
