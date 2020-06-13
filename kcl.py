@@ -47,6 +47,6 @@ for url in newrls:
         print(name + ", " + email)
 
     except Exception as e:
-        print(e)
+        # print(e)
         pass
     time.sleep(0.5)
