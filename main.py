@@ -5,6 +5,10 @@ import http.cookiejar
 import time
 import os
 import re
+import sys
+import urllib.parse
+
+print("Name, Email")
 
 # Set headers
 headers = requests.utils.default_headers()
@@ -13,8 +17,19 @@ headers.update(
 # cookies = http.cookiejar.MozillaCookieJar('cookies.txt')
 # cookies.load()
 
-root = "https://www.warwicksu.com/societies-sports/societies/"
-newrls = []
+
+def get_domain(url):
+    a = urllib.parse.urlsplit(url)
+    return str(a.scheme) + "://" + str(a.hostname)
+
+
+try:
+    root = sys.argv[1].strip().strip("\"")
+    domain = get_domain(root)
+except:
+    print("error in unis.yml file")
+
+urls = []
 
 req = requests.get(root, headers)  # , cookies=cookies)
 soup = BeautifulSoup(req.content, 'html.parser')
@@ -22,28 +37,28 @@ main = soup.find('div', class_=re.compile('msl_organisation_list'))
 
 for a in main.find_all('a', href=True):
     url = a['href']
-    if url.startswith("/societies-sports/societies"):
-        newrls.append("https://warwicksu.com" + url)
+    if url.startswith("/"):
+        urls.append(domain + url)
 
-newrls = list(dict.fromkeys(newrls))
+urls = list(dict.fromkeys(urls))
 
-for url in newrls:
+for url in urls:  # [urls[i] for i in range(1)]:
     req = requests.get(url, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
-        name = str(soup.find('h2', class_=re.compile(
-            'orgName')).text.strip()).lower()
+        name = soup.find('title').text.strip().lower()
         email = soup.find('a', class_=re.compile('msl_email'))['href'][7:]
 
-        name = name.replace("society", "")
-        name = name.replace("warwick", "")
-        name = name + " society exec"
+        name = name.replace("&", " and ")
+        name = name.replace(",", "")
         name = name.replace("  ", " ")
+        name = name.replace("   ", " ")
         name = name.strip()
         name = name.title()
 
         print(name + ", " + email)
 
-    except:
+    except:  # Exception as e:
+        # print(e)
         pass
-    time.sleep(0.5)
+    time.sleep(0.3)

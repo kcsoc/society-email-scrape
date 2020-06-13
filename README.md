@@ -1,7 +1,8 @@
 # warwicksu-societies-email-grabber
+
+Add any URLs to `unis.yml`
  
 ```bash
-git clone
-pip3 install -r requirements.txt
-python3 main.py
+git clone https://github.com/overclockedllama/society-email-scrape.git
+./main.sh
 ```
