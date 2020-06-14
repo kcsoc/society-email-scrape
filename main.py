@@ -42,12 +42,13 @@ for a in main.find_all('a', href=True):
 
 urls = list(dict.fromkeys(urls))
 
-for url in urls:  # [urls[i] for i in range(1)]:
+for url in [urls[i] for i in range(3)]:
     req = requests.get(url, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
         name = soup.find('title').text.strip().lower()
-        email = soup.find('a', class_=re.compile('msl_email'))['href'][7:]
+        email = soup.find('a', class_=re.compile(
+            "msl_email|socemail"))['href'][7:]
 
         name = name.replace("&", " and ")
         name = name.replace(",", "")
