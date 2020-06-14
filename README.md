@@ -1,4 +1,4 @@
-# warwicksu-societies-email-grabber
+# society-email-scrape
 
 
 ## How to automatically generate new data
