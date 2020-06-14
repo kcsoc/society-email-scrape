@@ -42,7 +42,7 @@ for a in main.find_all('a', href=True):
 
 urls = list(dict.fromkeys(urls))
 
-for url in [urls[i] for i in range(3)]:
+for url in urls:  # [urls[i] for i in range(3)]:
     req = requests.get(url, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
