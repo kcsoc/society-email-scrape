@@ -18,4 +18,4 @@ done < unis.yml
 wait
 
 
-deactivate
+deactivate || echo "could not deactivate"
