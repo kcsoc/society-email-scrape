@@ -36,6 +36,7 @@ jobs:
         ./main.sh
     - name: Commit files
       run: |
+        git add output/
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -m "update csvs" -a
