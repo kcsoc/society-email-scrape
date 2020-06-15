@@ -42,7 +42,8 @@
                         const data = await response.json();
                         let htmlString = '<ul>';
                         for (let file of data) {
-                            htmlString += `<li><a href="${file.path}">${file.name}</a></li>`;
+                            let url = file.path.replace("/docs", "")
+                            htmlString += `<li><a href="${url}">${file.name}</a></li>`;
                         }
                         htmlString += '</ul>';
                         document.getElementById('ting').innerHTML = htmlString;
