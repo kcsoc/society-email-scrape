@@ -11,7 +11,7 @@ source ./env/bin/activate ||
 while read line; do
     (
     echo "doing ${line%%:*}"
-    python main.py "${line#*:}" > output/"${line%%:*}".csv && 
+    python main.py "${line#*:}" > docs/output/"${line%%:*}".csv && 
     echo "done ${line%%:*}"
     ) &
 done < unis.yml
