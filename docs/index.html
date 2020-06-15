@@ -42,7 +42,7 @@
                         const data = await response.json();
                         let htmlString = '<ul>';
                         for (let file of data) {
-                            let url = file.path.replace("/docs", "")
+                            let url = file.path.replace("\/docs", "");
                             htmlString += `<li><a href="${url}">${file.name}</a></li>`;
                         }
                         htmlString += '</ul>';
