@@ -33,7 +33,10 @@ urls = []
 
 req = requests.get(root, headers)  # , cookies=cookies)
 soup = BeautifulSoup(req.content, 'html.parser')
-main = soup.find(['div', 'ul'], class_=re.compile('msl_organisation_list'))
+main = soup.find(
+    ['div', 'ul'],
+    class_=re.compile('msl_organisation_list|view-uclu-societies-directory')
+)
 
 for a in main.find_all('a', href=True):
     url = a['href']
