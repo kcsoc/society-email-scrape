@@ -71,6 +71,7 @@ for url in urls:  # [urls[i] for i in range(3)]:
 
         name = name.replace(" | hertfordshire students' union", "")
         name = name.replace(" | coventry university students' union", "")
+        name = name.replace(" | clubs and societies | students' union ucl", "")
         name = name.replace("&", " and ")
         name = name.replace(",", "")
         name = name.replace("  ", " ")
