@@ -33,7 +33,7 @@ urls = []
 
 req = requests.get(root, headers)  # , cookies=cookies)
 soup = BeautifulSoup(req.content, 'html.parser')
-main = soup.find('div', class_=re.compile('msl_organisation_list'))
+main = soup.find(['div', 'ul'], class_=re.compile('msl_organisation_list'))
 
 for a in main.find_all('a', href=True):
     url = a['href']
@@ -47,9 +47,18 @@ for url in urls:  # [urls[i] for i in range(3)]:
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
         name = soup.find('title').text.strip().lower()
-        email = soup.find('a', class_=re.compile(
-            "msl_email|socemail"))['href'][7:]
+        try:
+            email = soup.find('a', class_=re.compile(
+                "msl_email|socemail"))['href'][7:]
+        except:
+            # email = soup.find(string=re.compile(
+                # "[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}"))
+            email = soup.find(string=lambda s: re.search(
+                "[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}", s) and not re.search("contact@hertfordshire.su", s))
+            reg = re.compile("[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}")
+            email = str(reg.findall(email)[0])
 
+        name = name.replace(" | hertfordshire students' union", "")
         name = name.replace("&", " and ")
         name = name.replace(",", "")
         name = name.replace("  ", " ")
@@ -61,5 +70,5 @@ for url in urls:  # [urls[i] for i in range(3)]:
 
     except:  # Exception as e:
         # print(e)
+        time.sleep(0.1)
         pass
-    time.sleep(0.1)
