@@ -82,5 +82,6 @@ for url in urls:  # [urls[i] for i in range(3)]:
 
     except:  # Exception as e:
         # print(e)
-        time.sleep(0.1)
         pass
+
+    time.sleep(0.1)
