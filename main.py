@@ -60,7 +60,7 @@ for url in urls:  # [urls[i] for i in range(3)]:
                               re.search("ctivities@brunel.ac") and not
                               re.search("infooffice.su@coventry.ac") and not
                               re.search("studentsunion@nottingham.ac") and not
-                              re.search("")
+                              re.search("societies@roehampton.ac")
                               )
             reg = re.compile("[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}")
             email = str(reg.findall(email)[0])
