@@ -53,12 +53,20 @@ for url in urls:  # [urls[i] for i in range(3)]:
         except:
             # email = soup.find(string=re.compile(
                 # "[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}"))
-            email = soup.find(string=lambda s: re.search(
-                "[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}", s) and not re.search("contact@hertfordshire.su", s))
+            email = soup.find(string=lambda s:
+                              re.search("[A-Za-z0-9]+[\._]?[A-Za-z0-9]+[@]\w+([.]\w{2,3})+", s) and not
+                              re.search("contact@hertfordshire.su", s) and not
+                              re.search("union.reception@aston.ac") and not
+                              re.search("ctivities@brunel.ac") and not
+                              re.search("infooffice.su@coventry.ac") and not
+                              re.search("studentsunion@nottingham.ac") and not
+                              re.search("")
+                              )
             reg = re.compile("[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}")
             email = str(reg.findall(email)[0])
 
         name = name.replace(" | hertfordshire students' union", "")
+        name = name.replace(" | Coventry University Students' Union", "")
         name = name.replace("&", " and ")
         name = name.replace(",", "")
         name = name.replace("  ", " ")
