@@ -69,7 +69,7 @@ for url in urls:  # [urls[i] for i in range(3)]:
             email = str(reg.findall(email)[0])
 
         name = name.replace(" | hertfordshire students' union", "")
-        name = name.replace(" | Coventry University Students' Union", "")
+        name = name.replace(" | coventry university students' union", "")
         name = name.replace("&", " and ")
         name = name.replace(",", "")
         name = name.replace("  ", " ")
