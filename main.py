@@ -71,13 +71,13 @@ for url in urls:  # [urls[i] for i in range(3)]:
                 "([A-Za-z0-9]+[\._]?[A-Za-z0-9]+[@]\w+([.]\w{2,3})+)")
             email = str(reg.findall(email)[0][0])
 
-        name = name.replace(" | hertfordshire students' union", "")
-        name = name.replace(" | coventry university students' union", "")
-        name = name.replace(" | clubs and societies | students' union ucl", "")
         name = name.replace("&", " and ")
         name = name.replace(",", "")
         name = name.replace("  ", " ")
         name = name.replace("   ", " ")
+        name = name.replace(" | hertfordshire students' union", "")
+        name = name.replace(" | coventry university students' union", "")
+        name = name.replace(" | clubs and societies | students' union ucl", "")
         name = name.strip()
         name = name.title()
 
