@@ -70,7 +70,7 @@ for url in urls:  # [urls[i] for i in range(5)]:
                 "msl_email|socemail"))['href'][7:]
         except:
             email = soup.find(string=lambda s:
-                              re.search("[A-Za-z0-9]+[\._]?[A-Za-z0-9]+[@]\w+([.]\w{2,3})+", s) and not
+                              re.search("[A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,3})+", s) and not
                               re.search("contact@hertfordshire.su", s) and not
                               re.search("union.reception@aston.ac", s) and not
                               re.search("ctivities@brunel.ac", s)and not
@@ -82,7 +82,7 @@ for url in urls:  # [urls[i] for i in range(5)]:
                               re.search("societies@roehampton.ac", s)
                               )
             reg = re.compile(
-                "([A-Za-z0-9]+[\._]?[A-Za-z0-9]+[@]\w+([.]\w{2,3})+)")
+                "([A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,3})+)")
             email = str(reg.findall(email)[0][0])
 
         name = name.replace("&", " and ")
