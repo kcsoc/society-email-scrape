@@ -64,6 +64,7 @@ for url in urls:  # [urls[i] for i in range(3)]:
                               re.search("infooffice.su@coventry.ac", s) and not
                               re.search("societies.su@coventry.ac", s) and not
                               re.search("studentsunion@nottingham.ac", s) and not
+                              re.search("studentsunion@cardiff.ac.uk", s) and not
                               re.search("societies@roehampton.ac", s)
                               )
             reg = re.compile(
