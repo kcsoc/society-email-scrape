@@ -23,29 +23,44 @@ def get_domain(url):
     return str(a.scheme) + "://" + str(a.hostname)
 
 
+def get_urls(root):
+    urls = []
+
+    req = requests.get(root, headers)  # , cookies=cookies)
+    soup = BeautifulSoup(req.content, 'html.parser')
+    main = soup.find(
+        ['div', 'ul', 'section'],
+        class_=re.compile(
+            'msl_organisation_list|view-uclu-societies-directory|atoz-container|campl-mobile-list-layout')
+    )
+
+    for a in main.find_all('a', href=True):
+        url = a['href']
+        if url.startswith("/"):
+            urls.append(domain + url)
+
+    urls = list(dict.fromkeys(urls))
+    return urls
+
+
 try:
     root = sys.argv[1].strip().strip("\"")
     domain = get_domain(root)
 except:
     print("error in unis.yml file")
 
-urls = []
+if "studentsunionucl" in root:
+    urls = []
+    for i in range(16):
+        urls += get_urls(root + "?page=" + str(i))
+        time.sleep(0.3)
 
-req = requests.get(root, headers)  # , cookies=cookies)
-soup = BeautifulSoup(req.content, 'html.parser')
-main = soup.find(
-    ['div', 'ul'],
-    class_=re.compile('msl_organisation_list|view-uclu-societies-directory')
-)
+    urls = list(dict.fromkeys(urls))
 
-for a in main.find_all('a', href=True):
-    url = a['href']
-    if url.startswith("/"):
-        urls.append(domain + url)
+else:
+    urls = get_urls(root)
 
-urls = list(dict.fromkeys(urls))
-
-for url in urls:  # [urls[i] for i in range(3)]:
+for url in urls:  # [urls[i] for i in range(5)]:
     req = requests.get(url, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
@@ -54,8 +69,6 @@ for url in urls:  # [urls[i] for i in range(3)]:
             email = soup.find('a', class_=re.compile(
                 "msl_email|socemail"))['href'][7:]
         except:
-            # email = soup.find(string=re.compile(
-                # "[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}"))
             email = soup.find(string=lambda s:
                               re.search("[A-Za-z0-9]+[\._]?[A-Za-z0-9]+[@]\w+([.]\w{2,3})+", s) and not
                               re.search("contact@hertfordshire.su", s) and not
@@ -65,6 +78,7 @@ for url in urls:  # [urls[i] for i in range(3)]:
                               re.search("societies.su@coventry.ac", s) and not
                               re.search("studentsunion@nottingham.ac", s) and not
                               re.search("studentsunion@cardiff.ac.uk", s) and not
+                              re.search("union@imperial.ac.uk", s) and not
                               re.search("societies@roehampton.ac", s)
                               )
             reg = re.compile(
@@ -78,6 +92,7 @@ for url in urls:  # [urls[i] for i in range(3)]:
         name = name.replace(" | hertfordshire students' union", "")
         name = name.replace(" | coventry university students' union", "")
         name = name.replace(" | clubs and societies | students' union ucl", "")
+        name = name.replace(" | imperial college union", "")
         name = name.strip()
         name = name.title()
 
