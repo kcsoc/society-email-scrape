@@ -66,7 +66,8 @@ for url in urls:  # [urls[i] for i in range(3)]:
                               re.search("studentsunion@nottingham.ac", s) and not
                               re.search("societies@roehampton.ac", s)
                               )
-            reg = re.compile("[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}")
+            reg = re.compile(
+                "[A-Za-z0-9]+[\._]?[A-Za-z0-9]+[@]\w+([.]\w{2,3})+")
             email = str(reg.findall(email)[0])
 
         name = name.replace(" | hertfordshire students' union", "")
