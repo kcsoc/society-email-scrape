@@ -31,7 +31,7 @@ def get_urls(root):
     main = soup.find(
         ['div', 'ul', 'section'],
         class_=re.compile(
-            'msl_organisation_list|view-uclu-societies-directory|atoz-container|campl-mobile-list-layout')
+            'msl_organisation_list|view-uclu-societies-directory|atoz-container|listsocieties')
     )
 
     for a in main.find_all('a', href=True):
@@ -64,7 +64,10 @@ for url in urls:  # [urls[i] for i in range(5)]:
     req = requests.get(url, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
-        name = soup.find('title').text.strip().lower()
+        if "cusu.co.uk" in root:
+            name = soup.find('h2').find('a').text.strip().lower()
+        else:
+            name = soup.find('title').text.strip().lower()
         try:
             email = soup.find('a', class_=re.compile(
                 "msl_email|socemail"))['href'][7:]
