@@ -77,7 +77,7 @@ for url in urls:  # [urls[i] for i in range(5)]:
                               re.search(email_regex, s) and not
                               re.search("contact@hertfordshire.su", s) and not
                               re.search("union.reception@aston.ac", s) and not
-                              re.search("ctivities@brunel.ac", s)and not
+                              re.search("ctivities@brunel.ac", s) and not
                               re.search("infooffice.su@coventry.ac", s) and not
                               re.search("societies.su@coventry.ac", s) and not
                               re.search("studentsunion@nottingham.ac", s) and not
