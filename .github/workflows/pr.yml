@@ -41,11 +41,3 @@ jobs:
     - name: run main ting
       run: |
         ./main.sh
-        
-    - name: Commit files
-      run: |
-        git add docs/
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "update csv" -a
-
