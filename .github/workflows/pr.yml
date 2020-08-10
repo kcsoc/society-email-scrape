@@ -41,3 +41,8 @@ jobs:
     - name: run main ting
       run: |
         ./main.sh
+    
+    - name: output la data
+      run: |
+        for i in `echo docs/output/*`; do echo "$i"; echo; cat $i; echo; echo; done
+        
