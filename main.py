@@ -71,8 +71,10 @@ for url in urls:  # [urls[i] for i in range(5)]:
         try:
             email = soup.find('a', class_=re.compile(
                 "msl_email|socemail"))['href'][7:]
+            if "infooffice.su@coventry.ac" in email:
+                raise ValueError("Oh no")
         except:
-            email_regex = "[A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,4})+"
+            email_regex = "[A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,8})+"
             email = soup.find(string=lambda s:
                               re.search(email_regex, s) and not
                               re.search("contact@hertfordshire.su", s) and not
