@@ -1,4 +1,4 @@
-arrow==0.15.8
+arrow==0.16.0
 astroid==2.4.2
 autopep8==1.5.4
 beautifulsoup4==4.9.1
