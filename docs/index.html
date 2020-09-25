@@ -26,7 +26,10 @@
         </div>
         <div class="row-fluid">
             <div class="col-md-12">
-                &nbsp;
+                <p>
+                    Below you can find a csv file containing all the email addresses of every society at a given university. 
+                    The csv files can be imported into mailchimp and used for marketing purposes. 
+                </p>
             </div>
         </div>
 
@@ -38,7 +41,7 @@
 
                 <script>
                     (async () => {
-                        const response = await fetch('https://api.github.com/repos/overclockedllama/society-email-scrape/contents/docs/output');
+                        const response = await fetch('https://api.github.com/repos/kcsoc/society-email-scrape/contents/docs/output');
                         const data = await response.json();
                         let htmlString = '<ul>';
                         for (let file of data) {
@@ -79,7 +82,7 @@
 
         <div class="row-fluid">
             <div class="col-md-12">
-                &nbsp;
+                <p>Thanks for visiting this site. The source code can be found <a href="https://github.com/kcsoc/society-email-scrape/">here</a>. 
             </div>
         </div>
 
