@@ -31,13 +31,16 @@ def get_urls(root):
     main = soup.find(
         ['div', 'ul', 'section'],
         class_=re.compile(
-            'msl_organisation_list|view-uclu-societies-directory|atoz-container|listsocieties')
+            'msl_organisation_list|view-uclu-societies-directory|atoz-container|listsocieties|block-og-menu')
     )
 
     for a in main.find_all('a', href=True):
         url = a['href']
         if url.startswith("/"):
             urls.append(domain + url)
+
+        if url.startswith("https://society.tedu.edu"):
+            urls.append(url)
 
     urls = list(dict.fromkeys(urls))
     return urls
@@ -99,6 +102,7 @@ for url in urls:  # [urls[i] for i in range(5)]:
         name = name.replace(" | coventry university students' union", "")
         name = name.replace(" | clubs and societies | students' union ucl", "")
         name = name.replace(" | imperial college union", "")
+        name = name.replace(" | ted üniversitesi", "")
         name = name.strip()
         name = name.title()
 
