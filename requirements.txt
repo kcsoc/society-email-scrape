@@ -1,5 +1,5 @@
 arrow==0.17.0
-astroid
+astroid==2.4.2
 autopep8==1.5.4
 beautifulsoup4==4.9.3
 binaryornot==0.4.4
