@@ -1,7 +1,11 @@
 # society-email-scrape
 
+## Site Live at https://kcsoc.github.io/society-email-scrape/
 
-## How to automatically generate new data
+
+## Development
+
+### How to automatically generate new data
  - go to `unis.yml`
  - add your uni
  - create a pull request
@@ -10,7 +14,7 @@
  - https://kcsoc.github.io/society-email-scrape/
 
 
-## How to run yourself
+### How to run yourself
 
 Add any URLs to `unis.yml`
  
