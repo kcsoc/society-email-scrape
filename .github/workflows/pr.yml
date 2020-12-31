@@ -46,3 +46,7 @@ jobs:
       run: |
         for i in `echo docs/output/*`; do echo "$i"; echo; cat $i; echo; echo; done
         
+    - name: print diffs
+      run: |
+        git status
+        git diff

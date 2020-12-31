@@ -1,38 +1,66 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-import http.cookiejar
 import time
 import os
 import re
 import sys
 import urllib.parse
 
+DEBUG_MODE = False
+if "DEBUG_MODE" in os.environ:
+    DEBUG_MODE = True
+debugprint = print if DEBUG_MODE else lambda *a, **k: None
+
+email_regex = "[A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,8})+"
+bad_emails = "|".join([
+    "contact@hertfordshire.su",
+    "union.reception@aston.ac",
+    "ctivities@brunel.ac",
+    "infooffice.su@coventry.ac",
+    "societies.su@coventry.ac",
+    "studentsunion@nottingham.ac",
+    "studentsunion@cardiff.ac.uk",
+    "union@imperial.ac.uk",
+    "societies@roehampton.ac"
+])
+
+# Print CSV headers
 print("Name, Email")
 
 # Set headers
 headers = requests.utils.default_headers()
 headers.update(
     {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
+
+# cookies can be used if sites are behind auth wall
+# import http.cookiejar
 # cookies = http.cookiejar.MozillaCookieJar('cookies.txt')
 # cookies.load()
 
 
 def get_domain(url):
+    """This function gets the domain of a URL using the urllib library"""
     a = urllib.parse.urlsplit(url)
     return str(a.scheme) + "://" + str(a.hostname)
 
 
 def get_urls(root):
+    """Returns a list of all links to society pages
+
+    Parameters:
+        root (str):Root URL, society homepage.
+
+    Returns:
+        urls (list):List of URLs of all society pages.
+    """
     urls = []
+    classes = "|".join(["msl_organisation_list", "view-uclu-societies-directory",
+                        "atoz-container", "listsocieties", "block-og-menu"])
 
     req = requests.get(root, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
-    main = soup.find(
-        ['div', 'ul', 'section'],
-        class_=re.compile(
-            'msl_organisation_list|view-uclu-societies-directory|atoz-container|listsocieties|block-og-menu')
-    )
+    main = soup.find(['div', 'ul', 'section'], class_=re.compile(classes))
 
     for a in main.find_all('a', href=True):
         url = a['href']
@@ -47,11 +75,13 @@ def get_urls(root):
 
 
 try:
+    # get url from command line arguments
     root = sys.argv[1].strip().strip("\"")
     domain = get_domain(root)
 except:
     print("error in unis.yml file")
 
+# handle edge case for UCL's updated website
 if "studentsunionucl" in root:
     urls = []
     for i in range(16):
@@ -63,46 +93,48 @@ if "studentsunionucl" in root:
 else:
     urls = get_urls(root)
 
-for url in urls:  # [urls[i] for i in range(5)]:
+
+if DEBUG_MODE:
+    urls = [urls[i] for i in range(10)]
+
+debugprint(urls)
+
+
+for url in urls:
     req = requests.get(url, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
         if "cusu.co.uk" in root:
+            # coventry SU name edge case handling
             name = soup.find('h2').find('a').text.strip().lower()
         else:
+            # get name from title
             name = soup.find('title').text.strip().lower()
         try:
-            email = soup.find('a', class_=re.compile(
-                "msl_email|socemail"))['href'][7:]
+            # try to find email address using classes
+            email = soup.find('a',
+                              class_=re.compile("msl_email|socemail")
+                              )['href'][7:]
             if "infooffice.su@coventry.ac" in email:
-                raise ValueError("Oh no")
+                # throw error to leave try block
+                raise ValueError("_")
         except:
-            email_regex = "[A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,8})+"
             email = soup.find(string=lambda s:
                               re.search(email_regex, s) and not
-                              re.search("contact@hertfordshire.su", s) and not
-                              re.search("union.reception@aston.ac", s) and not
-                              re.search("ctivities@brunel.ac", s) and not
-                              re.search("infooffice.su@coventry.ac", s) and not
-                              re.search("societies.su@coventry.ac", s) and not
-                              re.search("studentsunion@nottingham.ac", s) and not
-                              re.search("studentsunion@cardiff.ac.uk", s) and not
-                              re.search("union@imperial.ac.uk", s) and not
-                              re.search("societies@roehampton.ac", s)
+                              re.search(bad_emails, s)  # remove default emails
                               )
+            debugprint(email)
             reg = re.compile(
                 "(" + email_regex + ")")
             email = str(reg.findall(email)[0][0])
+            debugprint(email)
 
+        # cleanup society name
         name = name.replace("&", " and ")
         name = name.replace(",", "")
         name = name.replace("  ", " ")
         name = name.replace("   ", " ")
-        name = name.replace(" | hertfordshire students' union", "")
-        name = name.replace(" | coventry university students' union", "")
-        name = name.replace(" | clubs and societies | students' union ucl", "")
-        name = name.replace(" | imperial college union", "")
-        name = name.replace(" | ted üniversitesi", "")
+        name = re.sub(" \|.*", '', name)
         name = name.strip()
         name = name.title()
 
