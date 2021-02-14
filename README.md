@@ -1,5 +1,7 @@
 # society-email-scrape
 
+<img src="https://repository-images.githubusercontent.com/271540220/ff7c5380-bae0-11ea-93ac-452a55cf57c4">
+
 ## Site Live at https://kcsoc.github.io/society-email-scrape/
 
 ## How to automatically generate new data
