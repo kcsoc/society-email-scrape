@@ -47,23 +47,27 @@ jobs:
         for i in `echo docs/output/*`; do echo "$i"; echo; cat $i; echo; echo; done
     
     - name: Get git status
-      run: git status > $GIT_STATUS
+      run: |
+        GIT_STATUS=$(git status)
+        echo "::set-env name=GIT_STATUS::$GIT_STATUS"
 
     - name: Comment on PR - git status
       uses: thollander/actions-comment-pull-request@master
       with:
         message: |
           Git Status: 
-          ${{ GIT_STATUS }}
+          $GIT_STATUS
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Get git diff
-      run: git diff > $GIT_DIFF
+      run: |
+        GIT_DIFF=$(git diff)
+        echo "::set-env name=GIT_DIFF::$GIT_DIFF"
 
     - name: Comment on PR - git diff
       uses: thollander/actions-comment-pull-request@master
       with:
         message: |
           Git Diff: 
-          ${{ GIT_DIFF }}
+          $GIT_DIFF
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
