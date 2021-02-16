@@ -48,7 +48,9 @@ jobs:
     
     - name: Get git status
       run: |
-        echo "GIT_STATUS=$(git status)" >> $GITHUB_ENV
+        echo "GIT_STATUS<<EOF" >> $GITHUB_ENV
+        git status >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
     - name: Comment on PR - git status
       uses: thollander/actions-comment-pull-request@master
@@ -60,7 +62,11 @@ jobs:
         
     - name: Get git diff
       run: |
-        echo "GIT_DIFF=${git diff}" >> $GITHUB_ENV
+        git add -A
+        echo "GIT_DIFF<<EOF" >> $GITHUB_ENV
+        git diff HEAD >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        git reset HEAD
 
     - name: Comment on PR - git diff
       uses: thollander/actions-comment-pull-request@master
