@@ -48,26 +48,24 @@ jobs:
     
     - name: Get git status
       run: |
-        GIT_STATUS=$(git status)
-        echo "::set-env name=GIT_STATUS::$GIT_STATUS"
+        echo "GIT_STATUS=$(git status)" >> $GITHUB_ENV
 
     - name: Comment on PR - git status
       uses: thollander/actions-comment-pull-request@master
       with:
         message: |
           Git Status: 
-          $GIT_STATUS
+          ${{ env.GIT_STATUS }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Get git diff
       run: |
-        GIT_DIFF=$(git diff)
-        echo "::set-env name=GIT_DIFF::$GIT_DIFF"
+        echo "GIT_DIFF=${git diff}" >> $GITHUB_ENV
 
     - name: Comment on PR - git diff
       uses: thollander/actions-comment-pull-request@master
       with:
         message: |
           Git Diff: 
-          $GIT_DIFF
+          ${{ env.GIT_DIFF }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
