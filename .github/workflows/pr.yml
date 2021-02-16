@@ -63,9 +63,8 @@ jobs:
     - name: Get git diff
       run: |
         git add -A
-        git diff HEAD
         echo "GIT_DIFF<<EOF" >> $GITHUB_ENV
-        git diff >> $GITHUB_ENV
+        git diff HEAD >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
         git reset HEAD
 
