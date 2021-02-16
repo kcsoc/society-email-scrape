@@ -62,9 +62,12 @@ jobs:
         
     - name: Get git diff
       run: |
+        git add -A
+        git diff HEAD
         echo "GIT_DIFF<<EOF" >> $GITHUB_ENV
         git diff >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
+        git reset HEAD
 
     - name: Comment on PR - git diff
       uses: thollander/actions-comment-pull-request@master
