@@ -50,3 +50,15 @@ jobs:
       run: |
         git status
         git diff
+        
+    - name: Comment on PR - git status
+      uses: thollander/actions-comment-pull-request@master
+      with:
+        message: 'Git Status: \n ${{ git status }}'
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Comment on PR - git diff
+      uses: thollander/actions-comment-pull-request@master
+      with:
+        message: 'Git Status: \n ${{ git diff }}'
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
