@@ -45,24 +45,25 @@ jobs:
     - name: output la data
       run: |
         for i in `echo docs/output/*`; do echo "$i"; echo; cat $i; echo; echo; done
-        
-    - name: print diffs
-      run: |
-        git status
-        git diff
-        
+    
+    - name: Get git status
+      run: git status > $GIT_STATUS
+
     - name: Comment on PR - git status
       uses: thollander/actions-comment-pull-request@master
       with:
         message: |
           Git Status: 
-          $(git status)
+          ${{ GIT_STATUS }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
+    - name: Get git diff
+      run: git diff > $GIT_DIFF
+
     - name: Comment on PR - git diff
       uses: thollander/actions-comment-pull-request@master
       with:
         message: |
           Git Diff: 
-          $(git diff)
+          ${{ GIT_DIFF }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
