@@ -54,11 +54,15 @@ jobs:
     - name: Comment on PR - git status
       uses: thollander/actions-comment-pull-request@master
       with:
-        message: 'Git Status: \n ${{ git status }}'
+        message: |
+          Git Status: 
+          $(git status)
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Comment on PR - git diff
       uses: thollander/actions-comment-pull-request@master
       with:
-        message: 'Git Status: \n ${{ git diff }}'
+        message: |
+          Git Diff: 
+          $(git diff)
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
