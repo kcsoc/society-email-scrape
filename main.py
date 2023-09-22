@@ -3,15 +3,16 @@ import requests
 import re
 import time
 import os
-import re
 import sys
 import urllib.parse
 
+# Define DEBUG_MODE and debugprint function
 DEBUG_MODE = False
 if "DEBUG_MODE" in os.environ:
     DEBUG_MODE = True
 debugprint = print if DEBUG_MODE else lambda *a, **k: None
 
+# Define regular expressions for email and bad emails
 email_regex = "[A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,8})+"
 bad_emails = "|".join([
     "contact@hertfordshire.su",
@@ -28,31 +29,25 @@ bad_emails = "|".join([
 # Print CSV headers
 print("Name, Email")
 
-# Set headers
+# Set headers for HTTP requests
 headers = requests.utils.default_headers()
-headers.update(
-    {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
-
-# cookies can be used if sites are behind auth wall
-# import http.cookiejar
-# cookies = http.cookiejar.MozillaCookieJar('cookies.txt')
-# cookies.load()
-
+headers.update({
+    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
+})
 
 def get_domain(url):
     """This function gets the domain of a URL using the urllib library"""
     a = urllib.parse.urlsplit(url)
     return str(a.scheme) + "://" + str(a.hostname)
 
-
 def get_urls(root):
     """Returns a list of all links to society pages
 
     Parameters:
-        root (str):Root URL, society homepage.
+        root (str): Root URL, society homepage.
 
     Returns:
-        urls (list):List of URLs of all society pages.
+        urls (list): List of URLs of all society pages.
     """
     urls = []
     classes = "|".join(["msl_organisation_list", "view-uclu-societies-directory",
@@ -73,15 +68,14 @@ def get_urls(root):
     urls = list(dict.fromkeys(urls))
     return urls
 
-
 try:
-    # get url from command line arguments
+    # Get URL from command line arguments
     root = sys.argv[1].strip().strip("\"")
     domain = get_domain(root)
 except:
     print("error in unis.yml file")
 
-# handle edge case for UCL's updated website
+# Handle edge case for UCL's updated website
 if "studentsunionucl" in root:
     urls = []
     for i in range(16):
@@ -89,39 +83,36 @@ if "studentsunionucl" in root:
         time.sleep(0.3)
 
     urls = list(dict.fromkeys(urls))
-
 else:
     urls = get_urls(root)
-
 
 if DEBUG_MODE:
     urls = [urls[i] for i in range(10)]
 
 debugprint(urls)
 
-
 for url in urls:
     req = requests.get(url, headers)  # , cookies=cookies)
     soup = BeautifulSoup(req.content, 'html.parser')
     try:
         if "cusu.co.uk" in root:
-            # coventry SU name edge case handling
+            # Coventry SU name edge case handling
             name = soup.find('h2').find('a').text.strip().lower()
         else:
-            # get name from title
+            # Get name from title
             name = soup.find('title').text.strip().lower()
         try:
-            # try to find email address using classes
+            # Try to find email address using classes
             email = soup.find('a',
                               class_=re.compile("msl_email|socemail")
                               )['href'][7:]
             if "infooffice.su@coventry.ac" in email:
-                # throw error to leave try block
+                # Throw error to leave try block
                 raise ValueError("_")
         except:
             email = soup.find(string=lambda s:
                               re.search(email_regex, s) and not
-                              re.search(bad_emails, s)  # remove default emails
+                              re.search(bad_emails, s)  # Remove default emails
                               )
             debugprint(email)
             reg = re.compile(
@@ -129,7 +120,7 @@ for url in urls:
             email = str(reg.findall(email)[0][0])
             debugprint(email)
 
-        # cleanup society name
+        # Cleanup society name
         name = name.replace("&", " and ")
         name = name.replace(",", "")
         name = name.replace("  ", " ")
