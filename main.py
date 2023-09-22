@@ -6,15 +6,10 @@ import os
 import sys
 import urllib.parse
 
-# Define DEBUG_MODE and debugprint function
-DEBUG_MODE = False
-if "DEBUG_MODE" in os.environ:
-    DEBUG_MODE = True
-debugprint = print if DEBUG_MODE else lambda *a, **k: None
-
-# Define regular expressions for email and bad emails
-email_regex = "[A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,8})+"
-bad_emails = "|".join([
+# Constants
+DEBUG_MODE = "DEBUG_MODE" in os.environ and os.environ["DEBUG_MODE"] == "True"
+EMAIL_REGEX = "[A-Za-z0-9]+[\.\-_]?[A-Za-z0-9]+[@]\w+([.]\w{2,8})+"
+BAD_EMAILS = [
     "contact@hertfordshire.su",
     "union.reception@aston.ac",
     "ctivities@brunel.ac",
@@ -24,115 +19,96 @@ bad_emails = "|".join([
     "studentsunion@cardiff.ac.uk",
     "union@imperial.ac.uk",
     "societies@roehampton.ac"
-])
+]
+CSV_HEADERS = "Name, Email"
+USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
 
-# Print CSV headers
-print("Name, Email")
-
-# Set headers for HTTP requests
-headers = requests.utils.default_headers()
-headers.update({
-    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
-})
+# Debug print function
+debugprint = print if DEBUG_MODE else lambda *a, **k: None
 
 def get_domain(url):
-    """This function gets the domain of a URL using the urllib library"""
-    a = urllib.parse.urlsplit(url)
-    return str(a.scheme) + "://" + str(a.hostname)
+    """Get the domain of a URL."""
+    parsed_url = urllib.parse.urlsplit(url)
+    return f"{parsed_url.scheme}://{parsed_url.hostname}"
 
-def get_urls(root):
-    """Returns a list of all links to society pages
-
-    Parameters:
-        root (str): Root URL, society homepage.
-
-    Returns:
-        urls (list): List of URLs of all society pages.
-    """
-    urls = []
+def get_page_urls(root_url):
+    """Retrieve a list of society page URLs from the given root URL."""
+    page_urls = []
     classes = "|".join(["msl_organisation_list", "view-uclu-societies-directory",
                         "atoz-container", "listsocieties", "block-og-menu"])
 
-    req = requests.get(root, headers)  # , cookies=cookies)
+    req = requests.get(root_url, headers={"User-Agent": USER_AGENT})
     soup = BeautifulSoup(req.content, 'html.parser')
     main = soup.find(['div', 'ul', 'section'], class_=re.compile(classes))
 
     for a in main.find_all('a', href=True):
         url = a['href']
         if url.startswith("/"):
-            urls.append(domain + url)
+            page_urls.append(domain + url)
 
         if url.startswith("https://society.tedu.edu"):
-            urls.append(url)
+            page_urls.append(url)
 
-    urls = list(dict.fromkeys(urls))
-    return urls
+    return list(set(page_urls))  # Use set to remove duplicates
 
-try:
-    # Get URL from command line arguments
-    root = sys.argv[1].strip().strip("\"")
-    domain = get_domain(root)
-except:
-    print("error in unis.yml file")
+def clean_name(name):
+    """Clean up the society name."""
+    name = name.replace("&", " and ")
+    name = name.replace(",", "")
+    name = re.sub(r'\s+', ' ', name).strip()
+    name = re.sub(r' \|.*', '', name)
+    return name.title()
 
-# Handle edge case for UCL's updated website
-if "studentsunionucl" in root:
-    urls = []
-    for i in range(16):
-        urls += get_urls(root + "?page=" + str(i))
-        time.sleep(0.3)
-
-    urls = list(dict.fromkeys(urls))
-else:
-    urls = get_urls(root)
-
-if DEBUG_MODE:
-    urls = [urls[i] for i in range(10)]
-
-debugprint(urls)
-
-for url in urls:
-    req = requests.get(url, headers)  # , cookies=cookies)
-    soup = BeautifulSoup(req.content, 'html.parser')
+def extract_email(soup, root_url):
+    """Extract the email address from the HTML soup."""
     try:
-        if "cusu.co.uk" in root:
+        email = soup.find('a', class_=re.compile("msl_email|socemail"))['href'][7:]
+        if "infooffice.su@coventry.ac" in email:
+            raise ValueError("Invalid email")
+    except:
+        email_match = re.search(f"({EMAIL_REGEX})", str(soup))
+        email = email_match.group(1) if email_match else ""
+    return email
+
+def process_society_page(url, root_url):
+    """Process a society page and print name and email."""
+    try:
+        req = requests.get(url, headers={"User-Agent": USER_AGENT})
+        soup = BeautifulSoup(req.content, 'html.parser')
+
+        if "cusu.co.uk" in root_url:
             # Coventry SU name edge case handling
             name = soup.find('h2').find('a').text.strip().lower()
         else:
             # Get name from title
             name = soup.find('title').text.strip().lower()
-        try:
-            # Try to find email address using classes
-            email = soup.find('a',
-                              class_=re.compile("msl_email|socemail")
-                              )['href'][7:]
-            if "infooffice.su@coventry.ac" in email:
-                # Throw error to leave try block
-                raise ValueError("_")
-        except:
-            email = soup.find(string=lambda s:
-                              re.search(email_regex, s) and not
-                              re.search(bad_emails, s)  # Remove default emails
-                              )
-            debugprint(email)
-            reg = re.compile(
-                "(" + email_regex + ")")
-            email = str(reg.findall(email)[0][0])
-            debugprint(email)
 
-        # Cleanup society name
-        name = name.replace("&", " and ")
-        name = name.replace(",", "")
-        name = name.replace("  ", " ")
-        name = name.replace("   ", " ")
-        name = re.sub(" \|.*", '', name)
-        name = name.strip()
-        name = name.title()
+        email = extract_email(soup, root_url)
+        name = clean_name(name)
+        print(f"{name}, {email}")
 
-        print(name + ", " + email)
+    except Exception as e:
+        debugprint(f"Error processing page {url}: {str(e)}")
 
-    except:  # Exception as e:
-        # print(e)
-        pass
+def main():
+    try:
+        root_url = sys.argv[1].strip().strip("\"")
+        global domain
+        domain = get_domain(root_url)
+    except:
+        print("Error in unis.yml file")
+        return
 
-    time.sleep(0.1)
+    page_urls = get_page_urls(root_url)
+
+    if DEBUG_MODE:
+        page_urls = page_urls[:10]
+
+    print(CSV_HEADERS)
+    
+    for url in page_urls:
+        process_society_page(url, root_url)
+        time.sleep(0.1)
+
+if __name__ == '__main__':
+    main()
