@@ -5,7 +5,7 @@ beautifulsoup4==4.9.3
 binaryornot==0.4.4
 bs4==0.0.1
 certifi==2020.12.5
-chardet==3.0.4
+chardet==4.0.0
 click==7.1.2
 cookiecutter==1.7.2
 cookiejar==0.0.3
